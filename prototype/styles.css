@@ -506,8 +506,8 @@ main {
 }
 
 .chart {
-  display: grid;
-  gap: 10px;
+  overflow-x: auto;
+  padding-bottom: 4px;
 }
 
 .chart-header {
@@ -539,26 +539,81 @@ main {
   font-size: 1.35rem;
 }
 
-.chart-row {
+.xy-chart {
   display: grid;
-  grid-template-columns: 92px minmax(0, 1fr) 44px;
-  align-items: center;
-  gap: 10px;
+  grid-template-columns: 42px minmax(620px, 1fr);
+  grid-template-rows: 260px 42px;
+  min-width: 680px;
+}
+
+.y-axis {
+  display: grid;
+  grid-template-rows: repeat(5, 1fr);
+  padding: 0 8px 0 0;
   color: var(--muted);
-  font-size: 0.9rem;
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-align: right;
 }
 
-.bar-track {
-  height: 18px;
-  overflow: hidden;
-  border-radius: 999px;
-  background: var(--surface-2);
+.y-axis span {
+  transform: translateY(-8px);
 }
 
-.bar-fill {
+.plot-area {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(var(--bar-count), minmax(22px, 1fr));
+  align-items: end;
+  gap: 8px;
+  height: 260px;
+  border-left: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  background:
+    linear-gradient(to bottom, rgba(101, 113, 118, 0.18) 1px, transparent 1px) 0 0 / 100% 25%,
+    #fff;
+  padding: 10px 10px 0;
+}
+
+.plot-bar {
+  position: relative;
+  display: flex;
+  align-items: end;
+  justify-content: center;
   height: 100%;
-  border-radius: inherit;
-  background: linear-gradient(90deg, #2f9e7e, #e09a3e, #c2414b);
+}
+
+.plot-bar-fill {
+  width: min(32px, 100%);
+  min-height: 3px;
+  border-radius: 5px 5px 0 0;
+  background: linear-gradient(180deg, #c2414b, #e09a3e 46%, #2f9e7e);
+}
+
+.plot-bar-value {
+  position: absolute;
+  bottom: calc(var(--bar-value) * 1% + 7px);
+  color: var(--text);
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.x-axis {
+  grid-column: 2;
+  display: grid;
+  grid-template-columns: repeat(var(--bar-count), minmax(22px, 1fr));
+  gap: 8px;
+  padding: 7px 10px 0;
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-align: center;
+}
+
+.x-axis span {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .export-panel {
@@ -682,7 +737,8 @@ main {
     padding: 6px;
   }
 
-  .chart-row {
-    grid-template-columns: 76px minmax(0, 1fr) 38px;
+  .xy-chart {
+    grid-template-columns: 36px minmax(520px, 1fr);
+    min-width: 560px;
   }
 }

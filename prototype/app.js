@@ -452,16 +452,31 @@
     els.chartDescription.textContent = metric.description;
     renderChartSummary(latest, metric);
 
-    els.symptomChart.innerHTML = latest.map((entry) => {
-      const score = metric.value(entry);
-      return `
-        <div class="chart-row">
-          <span>${entry.date.slice(5)}</span>
-          <span class="bar-track"><span class="bar-fill" style="width: ${score}%"></span></span>
-          <strong>${score}</strong>
+    els.symptomChart.innerHTML = `
+      <div class="xy-chart" style="--bar-count: ${latest.length}">
+        <div class="y-axis" aria-hidden="true">
+          <span>100</span>
+          <span>75</span>
+          <span>50</span>
+          <span>25</span>
+          <span>0</span>
         </div>
-      `;
-    }).join("");
+        <div class="plot-area">
+          ${latest.map((entry) => {
+            const score = metric.value(entry);
+            return `
+              <div class="plot-bar" title="${formatDisplayDate(entry.date)}: ${score}" style="--bar-value: ${score}">
+                <span class="plot-bar-value">${score}</span>
+                <span class="plot-bar-fill" style="height: ${score}%"></span>
+              </div>
+            `;
+          }).join("")}
+        </div>
+        <div class="x-axis" aria-hidden="true">
+          ${latest.map((entry) => `<span>${entry.date.slice(5)}</span>`).join("")}
+        </div>
+      </div>
+    `;
   }
 
   function renderChartSummary(entries, metric) {
