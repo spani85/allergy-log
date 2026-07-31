@@ -26,6 +26,12 @@ Il primo prototipo statico vive fuori da questa cartella:
 
 - [`../prototype/`](../prototype/)
 
+## App corrente
+
+La prima versione statica dell'app vive in:
+
+- [`../app/`](../app/)
+
 ## Principio guida
 
 Il diario deve essere abbastanza rapido da usare ogni giorno, ma abbastanza strutturato da produrre un export serio da portare a un medico o allergologo.

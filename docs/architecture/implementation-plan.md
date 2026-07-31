@@ -111,6 +111,8 @@ Gestisce:
 
 ### Milestone 1 - App statica reale
 
+Stato: avviata.
+
 Obiettivo: portare il prototipo in `app/` con codice piu' ordinato.
 
 Include:
@@ -122,6 +124,24 @@ Include:
 - grafico;
 - CSV;
 - JSON export/import.
+
+Prima struttura realizzata:
+
+```text
+app/
+  index.html
+  styles/main.css
+  scripts/app.js
+  scripts/calendar.js
+  scripts/charts.js
+  scripts/constants.js
+  scripts/export.js
+  scripts/storage.js
+  scripts/utils.js
+  scripts/validation.js
+```
+
+Nota tecnica: gli script sono caricati come JavaScript classico, non come ES modules, per permettere il test diretto aprendo `app/index.html` senza server locale.
 
 ### Milestone 2 - Robustezza mobile
 
@@ -180,4 +200,3 @@ Include:
 - Campo note libero.
 - Dati meteo o pollini.
 - Eventuale cifratura locale.
-

@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Allergy Log</title>
+    <link rel="stylesheet" href="styles/main.css">
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="app-header">
+        <div>
+          <p class="eyebrow">Diario allergologico</p>
+          <h1>Allergy Log</h1>
+        </div>
+        <div class="today-pill" id="todayPill"></div>
+      </header>
+
+      <nav class="tabs" aria-label="Sezioni">
+        <button class="tab-button is-active" type="button" data-view="entryView">Registra</button>
+        <button class="tab-button" type="button" data-view="calendarView">Calendario</button>
+        <button class="tab-button" type="button" data-view="chartsView">Grafici</button>
+        <button class="tab-button" type="button" data-view="exportView">Export</button>
+      </nav>
+
+      <main>
+        <section class="view is-active" id="entryView" aria-labelledby="entryTitle">
+          <form class="entry-form" id="entryForm">
+            <div class="form-topbar">
+              <div>
+                <h2 id="entryTitle">Registrazione</h2>
+                <p id="entryMode">Nuova giornata</p>
+              </div>
+              <label class="date-field">
+                <span>Data</span>
+                <input id="entryDate" name="date" type="date" required>
+              </label>
+            </div>
+
+            <div class="stepper" aria-label="Passaggi registrazione">
+              <button class="step-button is-active" type="button" data-step="1">1. Sintomi</button>
+              <button class="step-button" type="button" data-step="2">2. Impatto</button>
+            </div>
+
+            <section class="form-step is-active" data-step-panel="1">
+              <div class="section-heading">
+                <div>
+                  <h3>Sintomi principali</h3>
+                  <p>Valori da 1 a 4, dove 1 va bene e 4 indica sintomo forte.</p>
+                </div>
+                <button class="secondary-button" id="noSymptomsButton" type="button">Nessun sintomo</button>
+              </div>
+
+              <div class="symptom-grid" id="symptomGrid"></div>
+
+              <div class="field-grid">
+                <label class="field">
+                  <span>Tempo all'aperto</span>
+                  <select id="outdoorTime" name="outdoorTime" required></select>
+                </label>
+
+                <fieldset class="choice-field">
+                  <legend>Farmaci allergia</legend>
+                  <div class="choice-row" data-choice-group="tookMedication">
+                    <button type="button" data-value="true">Si</button>
+                    <button type="button" data-value="false">No</button>
+                  </div>
+                </fieldset>
+              </div>
+
+              <div class="form-actions">
+                <button class="primary-button" type="button" id="nextStepButton">Continua</button>
+              </div>
+            </section>
+
+            <section class="form-step" data-step-panel="2">
+              <div class="section-heading">
+                <div>
+                  <h3>Altri effetti</h3>
+                  <p>Impatto della giornata su riposo, lavoro e attivita.</p>
+                </div>
+                <button class="secondary-button" id="noImpactSymptomsButton" type="button">Nessun sintomo</button>
+              </div>
+
+              <div class="impact-list" id="impactList"></div>
+
+              <label class="range-field">
+                <span>Intensita percepita</span>
+                <output id="intensityOutput">50</output>
+                <input id="perceivedIntensity" name="perceivedIntensity" type="range" min="0" max="100" value="50" required>
+              </label>
+
+              <div class="form-actions split-actions">
+                <button class="secondary-button" type="button" id="backStepButton">Indietro</button>
+                <div>
+                  <button class="ghost-button" type="button" id="resetButton">Pulisci</button>
+                  <button class="primary-button" type="submit">Salva</button>
+                </div>
+              </div>
+            </section>
+          </form>
+        </section>
+
+        <section class="view" id="calendarView" aria-labelledby="calendarTitle">
+          <div class="calendar-layout">
+            <section class="panel calendar-panel">
+              <div class="panel-header">
+                <button class="icon-button" type="button" id="prevMonthButton" aria-label="Mese precedente">‹</button>
+                <div>
+                  <h2 id="calendarTitle">Calendario</h2>
+                  <p id="monthLabel"></p>
+                </div>
+                <button class="icon-button" type="button" id="nextMonthButton" aria-label="Mese successivo">›</button>
+              </div>
+              <div class="weekday-row" aria-hidden="true">
+                <span>Lun</span><span>Mar</span><span>Mer</span><span>Gio</span><span>Ven</span><span>Sab</span><span>Dom</span>
+              </div>
+              <div class="calendar-grid" id="calendarGrid"></div>
+            </section>
+
+            <aside class="panel detail-panel" id="dayDetail">
+              <h2>Dettaglio</h2>
+              <p class="muted">Seleziona un giorno registrato.</p>
+            </aside>
+          </div>
+        </section>
+
+        <section class="view" id="chartsView" aria-labelledby="chartsTitle">
+          <section class="panel chart-panel">
+            <div class="panel-header chart-header">
+              <div>
+                <h2 id="chartsTitle">Grafici</h2>
+                <p id="chartDescription">Indice calcolato dalla media dei 6 sintomi principali.</p>
+              </div>
+              <div class="metric-toggle" aria-label="Metrica grafico">
+                <button class="is-selected" type="button" data-chart-metric="symptomScore">Sintomi</button>
+                <button type="button" data-chart-metric="perceivedIntensity">Intensita</button>
+              </div>
+            </div>
+            <div class="chart-summary" id="chartSummary"></div>
+            <div class="chart" id="symptomChart"></div>
+          </section>
+        </section>
+
+        <section class="view" id="exportView" aria-labelledby="exportTitle">
+          <section class="panel export-panel">
+            <h2 id="exportTitle">Export e backup</h2>
+            <p>I dati sono salvati solo in questo browser. Scarica spesso un backup JSON se vuoi conservarli.</p>
+
+            <div class="export-actions">
+              <button class="primary-button" type="button" id="downloadCsvButton">Scarica CSV</button>
+              <button class="secondary-button" type="button" id="downloadJsonButton">Scarica JSON</button>
+              <label class="import-button">
+                Importa JSON
+                <input id="importJsonInput" type="file" accept="application/json">
+              </label>
+            </div>
+
+            <div class="stats-grid" id="statsGrid"></div>
+          </section>
+        </section>
+      </main>
+    </div>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+    <script src="scripts/constants.js"></script>
+    <script src="scripts/utils.js"></script>
+    <script src="scripts/storage.js"></script>
+    <script src="scripts/validation.js"></script>
+    <script src="scripts/export.js"></script>
+    <script src="scripts/calendar.js"></script>
+    <script src="scripts/charts.js"></script>
+    <script src="scripts/app.js"></script>
+  </body>
+</html>
