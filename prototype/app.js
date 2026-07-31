@@ -76,6 +76,7 @@
     document.getElementById("nextStepButton").addEventListener("click", () => setStep(2));
     document.getElementById("backStepButton").addEventListener("click", () => setStep(1));
     document.getElementById("noSymptomsButton").addEventListener("click", setNoSymptoms);
+    document.getElementById("noImpactSymptomsButton").addEventListener("click", setNoImpactSymptoms);
     document.getElementById("resetButton").addEventListener("click", resetForm);
     document.getElementById("prevMonthButton").addEventListener("click", () => changeMonth(-1));
     document.getElementById("nextMonthButton").addEventListener("click", () => changeMonth(1));
@@ -92,6 +93,13 @@
     els.entryForm.addEventListener("submit", (event) => {
       event.preventDefault();
       saveForm();
+    });
+
+    document.querySelectorAll("[data-choice-group] button").forEach((button) => {
+      button.addEventListener("click", () => {
+        const group = button.closest("[data-choice-group]");
+        setBoolean(group.dataset.choiceGroup, button.dataset.value === "true");
+      });
     });
   }
 
@@ -193,6 +201,14 @@
     });
     refreshSymptomButtons();
     toast("Sintomi impostati a 1.");
+  }
+
+  function setNoImpactSymptoms() {
+    impacts.forEach(([key]) => {
+      state.booleanValues[key] = false;
+    });
+    refreshChoiceButtons();
+    toast("Domande impatto impostate a No.");
   }
 
   function refreshSymptomButtons() {
