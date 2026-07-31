@@ -60,3 +60,6 @@ Non serve un'impostazione da landing page. La prima cosa visibile deve essere l'
 - Scaricare un CSV leggibile.
 - Modificare o cancellare una registrazione senza ostacoli.
 
+## Esito prototipo
+
+La review del primo prototipo e' documentata in [prototype-review.md](prototype-review.md).

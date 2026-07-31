@@ -16,7 +16,9 @@ L'obiettivo non e' replicare Allergyplan in modo fedele, ma costruire uno strume
 - [Requisiti](requirements/README.md)
 - [Modello dati ed export](requirements/data-model.md)
 - [Ragionamento prodotto](product/README.md)
+- [Review prototipo](product/prototype-review.md)
 - [Architettura e hosting](architecture/README.md)
+- [Piano implementazione](architecture/implementation-plan.md)
 
 ## Prototipo corrente
 

@@ -95,3 +95,6 @@ Partire con:
 
 Solo dopo la prima versione conviene decidere se pubblicarla come PWA o tenerla come strumento locale.
 
+## Piano operativo
+
+Il piano per passare dal prototipo alla prima versione reale e' in [implementation-plan.md](implementation-plan.md).
