@@ -18,7 +18,12 @@ L'obiettivo non e' replicare Allergyplan in modo fedele, ma costruire uno strume
 - [Ragionamento prodotto](product/README.md)
 - [Architettura e hosting](architecture/README.md)
 
+## Prototipo corrente
+
+Il primo prototipo statico vive fuori da questa cartella:
+
+- [`../prototype/`](../prototype/)
+
 ## Principio guida
 
 Il diario deve essere abbastanza rapido da usare ogni giorno, ma abbastanza strutturato da produrre un export serio da portare a un medico o allergologo.
-
