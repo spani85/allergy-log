@@ -19,6 +19,7 @@
       <nav class="tabs" aria-label="Sezioni">
         <button class="tab-button is-active" type="button" data-view="entryView">Registra</button>
         <button class="tab-button" type="button" data-view="calendarView">Calendario</button>
+        <button class="tab-button" type="button" data-view="chartsView">Grafici</button>
         <button class="tab-button" type="button" data-view="exportView">Export</button>
       </nav>
 
@@ -122,14 +123,21 @@
               <p class="muted">Seleziona un giorno registrato.</p>
             </aside>
           </div>
+        </section>
 
+        <section class="view" id="chartsView" aria-labelledby="chartsTitle">
           <section class="panel chart-panel">
-            <div class="panel-header plain">
+            <div class="panel-header chart-header">
               <div>
-                <h2>Andamento sintomi</h2>
-                <p>Indice calcolato dalla media dei 6 sintomi principali.</p>
+                <h2 id="chartsTitle">Grafici</h2>
+                <p id="chartDescription">Indice calcolato dalla media dei 6 sintomi principali.</p>
+              </div>
+              <div class="metric-toggle" aria-label="Metrica grafico">
+                <button class="is-selected" type="button" data-chart-metric="symptomScore">Sintomi</button>
+                <button type="button" data-chart-metric="perceivedIntensity">Intensita</button>
               </div>
             </div>
+            <div class="chart-summary" id="chartSummary"></div>
             <div class="chart" id="symptomChart"></div>
           </section>
         </section>

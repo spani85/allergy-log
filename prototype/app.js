@@ -30,7 +30,8 @@
     booleanValues: {},
     visibleStep: 1,
     currentMonth: new Date(),
-    selectedDate: null
+    selectedDate: null,
+    chartMetric: "symptomScore"
   };
 
   const els = {
@@ -48,6 +49,8 @@
     monthLabel: document.getElementById("monthLabel"),
     dayDetail: document.getElementById("dayDetail"),
     symptomChart: document.getElementById("symptomChart"),
+    chartDescription: document.getElementById("chartDescription"),
+    chartSummary: document.getElementById("chartSummary"),
     statsGrid: document.getElementById("statsGrid")
   };
 
@@ -71,6 +74,13 @@
 
     document.querySelectorAll(".step-button").forEach((button) => {
       button.addEventListener("click", () => setStep(Number(button.dataset.step)));
+    });
+
+    document.querySelectorAll("[data-chart-metric]").forEach((button) => {
+      button.addEventListener("click", () => {
+        state.chartMetric = button.dataset.chartMetric;
+        renderChart();
+      });
     });
 
     document.getElementById("nextStepButton").addEventListener("click", () => setStep(2));
@@ -431,11 +441,19 @@
     const latest = [...state.entries].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 30).reverse();
     if (!latest.length) {
       els.symptomChart.innerHTML = `<p class="muted">Nessun dato registrato.</p>`;
+      els.chartSummary.innerHTML = "";
       return;
     }
 
+    const metric = getChartMetric();
+    document.querySelectorAll("[data-chart-metric]").forEach((button) => {
+      button.classList.toggle("is-selected", button.dataset.chartMetric === state.chartMetric);
+    });
+    els.chartDescription.textContent = metric.description;
+    renderChartSummary(latest, metric);
+
     els.symptomChart.innerHTML = latest.map((entry) => {
-      const score = symptomScore(entry);
+      const score = metric.value(entry);
       return `
         <div class="chart-row">
           <span>${entry.date.slice(5)}</span>
@@ -444,6 +462,35 @@
         </div>
       `;
     }).join("");
+  }
+
+  function renderChartSummary(entries, metric) {
+    const values = entries.map(metric.value);
+    const average = Math.round(values.reduce((sum, value) => sum + value, 0) / values.length);
+    const max = Math.max(...values);
+    const min = Math.min(...values);
+    const maxEntry = entries[values.indexOf(max)];
+
+    els.chartSummary.innerHTML = `
+      <section class="chart-summary-item"><span>Giorni nel grafico</span><strong>${entries.length}</strong></section>
+      <section class="chart-summary-item"><span>Media</span><strong>${average}</strong></section>
+      <section class="chart-summary-item"><span>Minimo</span><strong>${min}</strong></section>
+      <section class="chart-summary-item"><span>Picco</span><strong>${max}</strong><span>${formatDisplayDate(maxEntry.date)}</span></section>
+    `;
+  }
+
+  function getChartMetric() {
+    if (state.chartMetric === "perceivedIntensity") {
+      return {
+        description: "Valore soggettivo impostato con lo slider da 0 a 100.",
+        value: (entry) => entry.perceivedIntensity
+      };
+    }
+
+    return {
+      description: "Indice calcolato dalla media dei 6 sintomi principali.",
+      value: symptomScore
+    };
   }
 
   function renderStats() {
