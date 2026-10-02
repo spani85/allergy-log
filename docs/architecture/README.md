@@ -71,6 +71,39 @@ Dato che il diario contiene dati personali, non bisogna salvare dati reali nel r
 
 Anche se il sito fosse pubblico, i dati possono restare locali nel browser, ma il codice sarebbe visibile.
 
+Per questa app il deploy usa GitHub Actions, non la pubblicazione diretta da branch/cartella.
+
+Workflow:
+
+```text
+.github/workflows/pages.yml
+```
+
+Il workflow pubblica solo la cartella:
+
+```text
+app/
+```
+
+Questo permette di tenere `docs/` come documentazione interna al repository e `prototype/` come riferimento storico, senza pubblicarli nel sito.
+
+Configurazione richiesta su GitHub:
+
+```text
+Repository -> Settings -> Pages -> Build and deployment -> Source: GitHub Actions
+```
+
+Quando viene fatto push su `main`, GitHub Actions crea l'artifact Pages usando `app/` e lo pubblica.
+
+Il file `app/robots.txt` contiene:
+
+```text
+User-agent: *
+Disallow: /
+```
+
+Questo chiede ai crawler di non indicizzare il sito, ma non e' una misura di sicurezza. Chi conosce l'URL puo' comunque aprire l'app.
+
 ### Altre opzioni gratuite
 
 Possibili alternative da valutare:

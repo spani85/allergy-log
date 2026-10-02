@@ -130,6 +130,7 @@ Prima struttura realizzata:
 ```text
 app/
   index.html
+  robots.txt
   styles/main.css
   scripts/app.js
   scripts/calendar.js
@@ -142,6 +143,14 @@ app/
 ```
 
 Nota tecnica: gli script sono caricati come JavaScript classico, non come ES modules, per permettere il test diretto aprendo `app/index.html` senza server locale.
+
+Deploy GitHub Pages configurato:
+
+```text
+.github/workflows/pages.yml
+```
+
+Il workflow pubblica solo `app/` tramite GitHub Actions.
 
 ### Milestone 2 - Robustezza mobile
 

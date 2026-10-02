@@ -46,3 +46,7 @@ Gli script sono separati ma caricati come JavaScript classico, non come ES modul
 ## Nota dati
 
 I dati restano nel browser. Per uso reale, esportare periodicamente il backup JSON.
+
+## Indicizzazione
+
+`robots.txt` chiede ai crawler di non indicizzare il sito pubblicato, ma non sostituisce autenticazione o controllo accessi.
