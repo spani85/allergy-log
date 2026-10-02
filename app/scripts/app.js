@@ -408,9 +408,24 @@ function changeMonth(delta) {
 }
 
 function selectDay(date) {
+  const entry = state.entries.find((item) => item.date === date);
+  if (!entry) {
+    startEntryForDate(date);
+    return;
+  }
+
   state.selectedDate = date;
   renderCurrentDayDetail();
   renderCurrentCalendar();
+}
+
+function startEntryForDate(date) {
+  state.selectedDate = null;
+  els.entryDate.value = date;
+  clearFormValues();
+  els.entryMode.textContent = "Nuova giornata";
+  setStep(1);
+  switchView("entryView");
 }
 
 function renderAll() {
