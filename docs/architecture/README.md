@@ -55,6 +55,10 @@ Una Progressive Web App puo' essere utile dopo la prima versione:
 
 Non e' necessaria per validare il diario.
 
+Su Android/Chrome la pagina pubblicata puo' gia' essere aggiunta alla schermata principale tramite il menu del browser. In alcune versioni di Chrome l'azione puo' comparire come `Installa` o `Installa e crea scorciatoia`, non necessariamente come `Aggiungi a schermata Home`.
+
+Una PWA completa con `manifest.webmanifest` e `service-worker.js` renderebbe l'installazione piu' affidabile e l'esperienza piu' simile a un'app standalone.
+
 ## Hosting
 
 ### File locale

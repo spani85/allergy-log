@@ -32,6 +32,8 @@ I sintomi principali sono:
 
 L'interfaccia deve usare faccine o indicatori visuali equivalenti per rendere immediata la scelta.
 
+Nella versione corrente si usano emoji native, senza pacchetti esterni.
+
 ### Azione rapida
 
 La prima schermata include un pulsante `Nessun sintomo`.
@@ -65,6 +67,8 @@ Lista iniziale:
 
 L'utente deve poter aggiungere, rinominare ed eliminare farmaci dalla lista.
 
+Se l'utente cambia la risposta a `no`, la selezione farmaci della giornata viene svuotata e nascosta.
+
 ## Seconda schermata
 
 ### Altri sintomi o impatti
@@ -82,6 +86,16 @@ Slider da `0` a `100`.
 
 Questo valore rappresenta la percezione soggettiva complessiva della giornata.
 
+## Comportamento dopo salvataggio
+
+Dopo il salvataggio di una registrazione:
+
+- i dati vengono salvati;
+- il form viene pulito;
+- la data torna a oggi;
+- l'interfaccia torna alla schermata `1. Sintomi`;
+- il form torna in modalita' `Nuova giornata`.
+
 ## Visualizzazioni
 
 L'applicazione deve includere:
@@ -90,6 +104,11 @@ L'applicazione deve includere:
 - dettaglio della registrazione selezionata;
 - grafico dell'andamento dei sintomi;
 - vista utile a capire rapidamente giorni buoni, medi e critici.
+
+Nel calendario:
+
+- clic su un giorno registrato: mostra il dettaglio della registrazione;
+- clic su un giorno non registrato: apre la schermata di registrazione, imposta quella data e mostra il form vuoto allo step `Sintomi`.
 
 ## Esportazione
 

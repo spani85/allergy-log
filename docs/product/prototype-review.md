@@ -47,6 +47,11 @@ Deve mostrare:
 - accesso rapido al dettaglio del giorno;
 - modifica ed eliminazione.
 
+Comportamento aggiunto dopo test su app reale:
+
+- se il giorno cliccato e' registrato, il calendario mostra il dettaglio;
+- se il giorno cliccato non e' registrato, l'app apre subito la schermata di registrazione con quella data preimpostata.
+
 ### Grafico
 
 La lista di barre orizzontali non era sufficiente.
@@ -95,6 +100,9 @@ Il JSON serve per backup e ripristino senza perdita dei dati.
 - Le azioni rapide devono esistere su entrambe le schermate di registrazione.
 - Il grafico deve essere percepito come grafico cartesiano, non come semplice lista.
 - La navigazione principale deve includere `Grafici` come sezione autonoma.
+- Dopo il salvataggio, il form deve tornare pulito alla schermata sintomi.
+- Il selettore farmaci deve essere visibile solo quando `Farmaci allergia` e' `Si`.
+- Le faccine testuali sono sufficienti per il prototipo, ma nell'app reale e' preferibile usare emoji native.
 
 ## Criterio per passare all'app vera
 
@@ -107,4 +115,3 @@ Il prototipo puo' essere promosso a base dell'app vera solo dopo aver separato a
 - export/import.
 
 Non serve introdurre un framework solo per ottenere questa separazione.
-
