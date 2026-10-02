@@ -386,9 +386,16 @@ function saveForm() {
   persistEntries(state.entries);
   state.currentMonth = monthFromIsoDate(entry.date);
   state.selectedDate = entry.date;
-  els.entryMode.textContent = "Modifica registrazione esistente";
+  resetFormAfterSave();
   renderAll();
   toast("Registrazione salvata.");
+}
+
+function resetFormAfterSave() {
+  clearFormValues();
+  els.entryDate.value = todayIso();
+  els.entryMode.textContent = "Nuova giornata";
+  setStep(1);
 }
 
 function changeMonth(delta) {
