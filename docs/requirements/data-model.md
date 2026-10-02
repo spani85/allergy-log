@@ -21,6 +21,7 @@ In prima versione ha senso avere al massimo una registrazione per giorno.
 | `wateryEyes` | integer | si | Da 1 a 4 |
 | `outdoorTimeMinutes` | integer | si | Da 0 a 720, step 30 |
 | `tookMedication` | boolean | si | Farmaci allergia |
+| `medicationsTaken` | string[] | si | Id farmaci selezionati; vuoto se `tookMedication` e' `false` |
 | `disturbedSleep` | boolean | si | Sonno disturbato |
 | `schoolWorkProblems` | boolean | si | Problemi scuola/lavoro |
 | `bothersomeSymptoms` | boolean | si | Sintomi fastidiosi |
@@ -28,6 +29,29 @@ In prima versione ha senso avere al massimo una registrazione per giorno.
 | `perceivedIntensity` | integer | si | Da 0 a 100 |
 | `createdAt` | string | si | Timestamp ISO |
 | `updatedAt` | string | si | Timestamp ISO |
+
+## Catalogo farmaci
+
+Il catalogo farmaci e' separato dalle registrazioni giornaliere.
+
+Campi:
+
+| Campo | Tipo | Obbligatorio | Note |
+| --- | --- | --- | --- |
+| `id` | string | si | Identificatore stabile |
+| `name` | string | si | Nome mostrato in UI |
+
+Lista iniziale:
+
+```json
+[
+  { "id": "antistaminico", "name": "antistaminico" },
+  { "id": "foster", "name": "foster" },
+  { "id": "oralair", "name": "oralair" }
+]
+```
+
+Le registrazioni salvano gli `id`, non i nomi. In questo modo un farmaco puo' essere rinominato senza dover riscrivere tutte le registrazioni.
 
 ## Indice calcolato di gravita'
 
@@ -63,7 +87,7 @@ Il CSV deve esportare sia i dati grezzi sia alcuni campi calcolati.
 Colonne proposte:
 
 ```text
-date,nose_itching,sneezing,runny_nose,blocked_nose,itchy_eyes,watery_eyes,outdoor_time_minutes,outdoor_time,took_medication,disturbed_sleep,school_work_problems,bothersome_symptoms,daily_activity_limitations,perceived_intensity,symptom_score_100,created_at,updated_at
+date,nose_itching,sneezing,runny_nose,blocked_nose,itchy_eyes,watery_eyes,outdoor_time_minutes,outdoor_time,took_medication,medications,disturbed_sleep,school_work_problems,bothersome_symptoms,daily_activity_limitations,perceived_intensity,symptom_score_100,created_at,updated_at
 ```
 
 ## JSON
@@ -76,6 +100,7 @@ Struttura proposta:
 {
   "version": 1,
   "exportedAt": "2026-07-31T12:00:00.000Z",
+  "medications": [],
   "entries": []
 }
 ```
@@ -90,4 +115,3 @@ In una versione solo statica con `localStorage`, i dati restano nel browser del 
 - i dati non si sincronizzano automaticamente tra telefono e computer.
 
 Per questo l'export JSON dovrebbe essere previsto presto come backup manuale.
-

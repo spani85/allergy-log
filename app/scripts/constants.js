@@ -17,10 +17,15 @@ window.AllergyLog.constants = {
     ["dailyActivityLimitations", "Limitazione attivita giornaliera"]
   ],
   ratings: [
-    [1, ":)"],
-    [2, ":|"],
-    [3, ":("],
-    [4, ":'("]
+    [1, "🙂"],
+    [2, "😐"],
+    [3, "🙁"],
+    [4, "🤧"]
+  ],
+  defaultMedications: [
+    { id: "antistaminico", name: "antistaminico" },
+    { id: "foster", name: "foster" },
+    { id: "oralair", name: "oralair" }
   ]
 };
 })();

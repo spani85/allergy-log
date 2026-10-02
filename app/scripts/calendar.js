@@ -50,7 +50,7 @@ function renderCalendar({ entries, currentMonth, selectedDate, elements, onSelec
   }
 }
 
-function renderDayDetail({ entry, dayDetail, onEdit, onDelete }) {
+function renderDayDetail({ entry, medications, dayDetail, onEdit, onDelete }) {
   if (!entry) {
     dayDetail.innerHTML = `
       <h2>Dettaglio</h2>
@@ -66,6 +66,7 @@ function renderDayDetail({ entry, dayDetail, onEdit, onDelete }) {
       <div class="detail-item"><span>Intensita percepita</span><strong>${entry.perceivedIntensity}/100</strong></div>
       <div class="detail-item"><span>Tempo all'aperto</span><strong>${formatMinutes(entry.outdoorTimeMinutes)}</strong></div>
       <div class="detail-item"><span>Farmaci</span><strong>${yesNo(entry.tookMedication)}</strong></div>
+      <div class="detail-item"><span>Farmaci presi</span><strong>${medicationNames(entry.medicationsTaken, medications) || "-"}</strong></div>
       ${symptoms.map(([key, label]) => `<div class="detail-item"><span>${label}</span><strong>${entry[key]}</strong></div>`).join("")}
     </div>
     <div class="detail-actions">
@@ -76,6 +77,13 @@ function renderDayDetail({ entry, dayDetail, onEdit, onDelete }) {
 
   document.getElementById("editSelectedButton").addEventListener("click", onEdit);
   document.getElementById("deleteSelectedButton").addEventListener("click", onDelete);
+}
+
+function medicationNames(ids, medications) {
+  if (!Array.isArray(ids) || !ids.length) return "";
+  return ids
+    .map((id) => medications.find((medication) => medication.id === id)?.name || id)
+    .join(", ");
 }
 
 function monthFromIsoDate(iso) {

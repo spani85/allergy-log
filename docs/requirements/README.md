@@ -55,6 +55,16 @@ Campo obbligatorio:
 
 - hai preso farmaci per l'allergia? `si` / `no`
 
+Se la risposta e' `si`, deve comparire la selezione farmaci e deve essere possibile selezionare uno o piu' farmaci da una lista gestibile.
+
+Lista iniziale:
+
+- antistaminico;
+- foster;
+- oralair.
+
+L'utente deve poter aggiungere, rinominare ed eliminare farmaci dalla lista.
+
 ## Seconda schermata
 
 ### Altri sintomi o impatti
@@ -120,4 +130,3 @@ Questi aspetti non sono richiesti nella prima versione:
 - integrazione con API meteo o pollini;
 - invio automatico al medico;
 - classificazioni mediche o diagnosi.
-

@@ -33,6 +33,8 @@ Gli script sono separati ma caricati come JavaScript classico, non come ES modul
 - registrazione giornaliera in due passaggi;
 - azioni rapide `Nessun sintomo`;
 - salvataggio in `localStorage`;
+- catalogo farmaci con aggiunta, rinomina ed eliminazione;
+- selezione di piu' farmaci per giornata;
 - calendario mensile;
 - dettaglio giorno;
 - modifica ed eliminazione;
@@ -44,4 +46,3 @@ Gli script sono separati ma caricati come JavaScript classico, non come ES modul
 ## Nota dati
 
 I dati restano nel browser. Per uso reale, esportare periodicamente il backup JSON.
-

@@ -3,7 +3,7 @@ const { symptoms } = window.AllergyLog.constants;
 const { assertValidEntry } = window.AllergyLog.validation;
 const { downloadFile, formatMinutes, symptomScore, todayIso } = window.AllergyLog.utils;
 
-function downloadCsv(entries) {
+function downloadCsv(entries, medications) {
   const header = [
     "date",
     "nose_itching",
@@ -15,6 +15,7 @@ function downloadCsv(entries) {
     "outdoor_time_minutes",
     "outdoor_time",
     "took_medication",
+    "medications",
     "disturbed_sleep",
     "school_work_problems",
     "bothersome_symptoms",
@@ -36,6 +37,7 @@ function downloadCsv(entries) {
     entry.outdoorTimeMinutes,
     formatMinutes(entry.outdoorTimeMinutes),
     entry.tookMedication,
+    medicationNames(entry.medicationsTaken, medications),
     entry.disturbedSleep,
     entry.schoolWorkProblems,
     entry.bothersomeSymptoms,
@@ -53,10 +55,11 @@ function downloadCsv(entries) {
   downloadFile(`allergy-log-${todayIso()}.csv`, "text/csv;charset=utf-8", csv);
 }
 
-function downloadJson(entries) {
+function downloadJson(entries, medications) {
   const payload = {
     version: 1,
     exportedAt: new Date().toISOString(),
+    medications,
     entries
   };
   downloadFile(
@@ -69,8 +72,16 @@ function downloadJson(entries) {
 function parseBackupJson(content) {
   const parsed = JSON.parse(content);
   const entries = Array.isArray(parsed.entries) ? parsed.entries : [];
+  const medications = Array.isArray(parsed.medications) ? parsed.medications : [];
   entries.forEach(assertValidEntry);
-  return entries;
+  return { entries, medications };
+}
+
+function medicationNames(ids, medications) {
+  if (!Array.isArray(ids) || !ids.length) return "";
+  return ids
+    .map((id) => medications.find((medication) => medication.id === id)?.name || id)
+    .join("; ");
 }
 
 function csvCell(value) {

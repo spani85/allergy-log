@@ -1,16 +1,18 @@
 (function () {
-const { impacts, ratings, symptoms } = window.AllergyLog.constants;
+const { defaultMedications, impacts, ratings, symptoms } = window.AllergyLog.constants;
 const { renderCalendar, renderDayDetail, monthFromIsoDate } = window.AllergyLog.calendar;
 const { renderChart } = window.AllergyLog.charts;
 const { downloadCsv, downloadJson, parseBackupJson } = window.AllergyLog.exporters;
-const { loadEntries, persistEntries, sortEntries } = window.AllergyLog.storage;
+const { loadEntries, loadMedications, persistEntries, persistMedications, sortEntries } = window.AllergyLog.storage;
 const { validateFormState } = window.AllergyLog.validation;
 const { formatDisplayDate, formatMinutes, todayIso } = window.AllergyLog.utils;
 
 const state = {
   entries: loadEntries(),
+  medications: loadMedications(defaultMedications),
   symptomValues: {},
   booleanValues: {},
+  medicationValues: [],
   visibleStep: 1,
   currentMonth: new Date(),
   selectedDate: null,
@@ -24,6 +26,11 @@ const els = {
   entryMode: document.getElementById("entryMode"),
   symptomGrid: document.getElementById("symptomGrid"),
   outdoorTime: document.getElementById("outdoorTime"),
+  medicationPickerWrapper: document.getElementById("medicationPickerWrapper"),
+  medicationPicker: document.getElementById("medicationPicker"),
+  medicationList: document.getElementById("medicationList"),
+  medicationForm: document.getElementById("medicationForm"),
+  medicationName: document.getElementById("medicationName"),
   impactList: document.getElementById("impactList"),
   perceivedIntensity: document.getElementById("perceivedIntensity"),
   intensityOutput: document.getElementById("intensityOutput"),
@@ -45,8 +52,11 @@ function initialize() {
   populateOutdoorOptions();
   renderSymptoms();
   renderImpacts();
+  renderMedicationPicker();
+  renderMedicationList();
   bindEvents();
   syncFormFromDate();
+  refreshMedicationPickerVisibility();
   renderAll();
 }
 
@@ -74,7 +84,7 @@ function bindEvents() {
   document.getElementById("prevMonthButton").addEventListener("click", () => changeMonth(-1));
   document.getElementById("nextMonthButton").addEventListener("click", () => changeMonth(1));
   document.getElementById("downloadCsvButton").addEventListener("click", handleDownloadCsv);
-  document.getElementById("downloadJsonButton").addEventListener("click", () => downloadJson(state.entries));
+  document.getElementById("downloadJsonButton").addEventListener("click", () => downloadJson(state.entries, state.medications));
   document.getElementById("importJsonInput").addEventListener("change", importJson);
 
   els.entryDate.addEventListener("change", syncFormFromDate);
@@ -86,6 +96,11 @@ function bindEvents() {
   els.entryForm.addEventListener("submit", (event) => {
     event.preventDefault();
     saveForm();
+  });
+
+  els.medicationForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+    addMedication();
   });
 
   document.querySelectorAll("[data-choice-group] button").forEach((button) => {
@@ -178,6 +193,47 @@ function renderImpacts() {
   });
 }
 
+function renderMedicationPicker() {
+  els.medicationPicker.innerHTML = "";
+  if (!state.medications.length) {
+    els.medicationPicker.innerHTML = `<p class="muted">Nessun farmaco configurato.</p>`;
+    return;
+  }
+
+  state.medications.forEach((medication) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "medication-chip";
+    button.dataset.medicationId = medication.id;
+    button.textContent = medication.name;
+    button.addEventListener("click", () => toggleMedication(medication.id));
+    els.medicationPicker.append(button);
+  });
+  refreshMedicationButtons();
+}
+
+function renderMedicationList() {
+  els.medicationList.innerHTML = "";
+  if (!state.medications.length) {
+    els.medicationList.innerHTML = `<p class="muted">Nessun farmaco configurato.</p>`;
+    return;
+  }
+  state.medications.forEach((medication) => {
+    const row = document.createElement("section");
+    row.className = "medication-row";
+    row.innerHTML = `
+      <strong>${escapeHtml(medication.name)}</strong>
+      <div class="medication-actions">
+        <button class="secondary-button" type="button" data-action="rename">Rinomina</button>
+        <button class="danger-button" type="button" data-action="delete">Elimina</button>
+      </div>
+    `;
+    row.querySelector("[data-action='rename']").addEventListener("click", () => renameMedication(medication.id));
+    row.querySelector("[data-action='delete']").addEventListener("click", () => deleteMedication(medication.id));
+    els.medicationList.append(row);
+  });
+}
+
 function setSymptom(key, value) {
   state.symptomValues[key] = value;
   refreshSymptomButtons();
@@ -185,7 +241,23 @@ function setSymptom(key, value) {
 
 function setBoolean(key, value) {
   state.booleanValues[key] = value;
+  if (key === "tookMedication" && !value) {
+    state.medicationValues = [];
+    refreshMedicationButtons();
+  }
   refreshChoiceButtons();
+  refreshMedicationPickerVisibility();
+}
+
+function toggleMedication(id) {
+  if (state.medicationValues.includes(id)) {
+    state.medicationValues = state.medicationValues.filter((value) => value !== id);
+  } else {
+    state.medicationValues = state.medicationValues.concat(id);
+    state.booleanValues.tookMedication = true;
+    refreshChoiceButtons();
+  }
+  refreshMedicationButtons();
 }
 
 function setNoSymptoms() {
@@ -222,6 +294,16 @@ function refreshChoiceButtons() {
   });
 }
 
+function refreshMedicationPickerVisibility() {
+  els.medicationPickerWrapper.hidden = state.booleanValues.tookMedication !== true;
+}
+
+function refreshMedicationButtons() {
+  document.querySelectorAll("[data-medication-id]").forEach((button) => {
+    button.classList.toggle("is-selected", state.medicationValues.includes(button.dataset.medicationId));
+  });
+}
+
 function syncFormFromDate() {
   const entry = state.entries.find((item) => item.date === els.entryDate.value);
   if (entry) {
@@ -241,21 +323,27 @@ function hydrateForm(entry) {
     state.booleanValues[key] = entry[key];
   });
   state.booleanValues.tookMedication = entry.tookMedication;
+  state.medicationValues = Array.isArray(entry.medicationsTaken) ? entry.medicationsTaken : [];
   els.outdoorTime.value = String(entry.outdoorTimeMinutes);
   els.perceivedIntensity.value = String(entry.perceivedIntensity);
   els.intensityOutput.textContent = String(entry.perceivedIntensity);
   refreshSymptomButtons();
   refreshChoiceButtons();
+  refreshMedicationButtons();
+  refreshMedicationPickerVisibility();
 }
 
 function clearFormValues() {
   state.symptomValues = {};
   state.booleanValues = {};
+  state.medicationValues = [];
   els.outdoorTime.value = "0";
   els.perceivedIntensity.value = "50";
   els.intensityOutput.textContent = "50";
   refreshSymptomButtons();
   refreshChoiceButtons();
+  refreshMedicationButtons();
+  refreshMedicationPickerVisibility();
 }
 
 function resetForm() {
@@ -270,6 +358,8 @@ function saveForm() {
     date: els.entryDate.value,
     symptomValues: state.symptomValues,
     booleanValues: state.booleanValues,
+    medicationsTaken: state.medicationValues,
+    medications: state.medications,
     outdoorTimeMinutes: Number(els.outdoorTime.value),
     perceivedIntensity: Number(els.perceivedIntensity.value)
   });
@@ -285,6 +375,7 @@ function saveForm() {
     ...Object.fromEntries(symptoms.map(([key]) => [key, state.symptomValues[key]])),
     outdoorTimeMinutes: Number(els.outdoorTime.value),
     tookMedication: state.booleanValues.tookMedication,
+    medicationsTaken: state.booleanValues.tookMedication ? state.medicationValues : [],
     ...Object.fromEntries(impacts.map(([key]) => [key, state.booleanValues[key]])),
     perceivedIntensity: Number(els.perceivedIntensity.value),
     createdAt: existing ? existing.createdAt : now,
@@ -336,6 +427,7 @@ function renderCurrentDayDetail() {
   const entry = state.entries.find((item) => item.date === state.selectedDate);
   renderDayDetail({
     entry,
+    medications: state.medications,
     dayDetail: els.dayDetail,
     onEdit: () => editEntry(entry),
     onDelete: () => deleteEntry(entry)
@@ -393,7 +485,71 @@ function handleDownloadCsv() {
     toast("Nessun dato da esportare.");
     return;
   }
-  downloadCsv(state.entries);
+  downloadCsv(state.entries, state.medications);
+}
+
+function addMedication() {
+  const name = normalizeMedicationName(els.medicationName.value);
+  if (!name) {
+    toast("Inserisci un nome farmaco.");
+    return;
+  }
+  if (state.medications.some((medication) => medication.name.toLowerCase() === name.toLowerCase())) {
+    toast("Farmaco gia presente.");
+    return;
+  }
+
+  state.medications = state.medications.concat({
+    id: createMedicationId(name),
+    name
+  });
+  persistMedications(state.medications);
+  els.medicationName.value = "";
+  renderMedicationPicker();
+  renderMedicationList();
+  toast("Farmaco aggiunto.");
+}
+
+function renameMedication(id) {
+  const medication = state.medications.find((item) => item.id === id);
+  if (!medication) return;
+
+  const name = normalizeMedicationName(window.prompt("Nuovo nome farmaco", medication.name) || "");
+  if (!name || name === medication.name) return;
+  if (state.medications.some((item) => item.id !== id && item.name.toLowerCase() === name.toLowerCase())) {
+    toast("Farmaco gia presente.");
+    return;
+  }
+
+  state.medications = state.medications.map((item) => item.id === id ? { ...item, name } : item);
+  persistMedications(state.medications);
+  renderMedicationPicker();
+  renderMedicationList();
+  renderAll();
+  toast("Farmaco rinominato.");
+}
+
+function deleteMedication(id) {
+  const medication = state.medications.find((item) => item.id === id);
+  if (!medication) return;
+  if (!window.confirm(`Eliminare "${medication.name}" dalla lista? Sara rimosso anche dalle registrazioni esistenti.`)) return;
+
+  state.medications = state.medications.filter((item) => item.id !== id);
+  state.medicationValues = state.medicationValues.filter((value) => value !== id);
+  state.entries = state.entries.map((entry) => {
+    const medicationsTaken = (entry.medicationsTaken || []).filter((value) => value !== id);
+    return {
+      ...entry,
+      medicationsTaken,
+      tookMedication: medicationsTaken.length > 0
+    };
+  });
+  persistMedications(state.medications);
+  persistEntries(state.entries);
+  renderMedicationPicker();
+  renderMedicationList();
+  renderAll();
+  toast("Farmaco eliminato.");
 }
 
 function importJson(event) {
@@ -403,8 +559,15 @@ function importJson(event) {
   const reader = new FileReader();
   reader.onload = () => {
     try {
-      state.entries = sortEntries(parseBackupJson(String(reader.result)));
+      const backup = parseBackupJson(String(reader.result));
+      state.entries = sortEntries(backup.entries);
+      if (backup.medications.length) {
+        state.medications = mergeMedications(state.medications, backup.medications);
+        persistMedications(state.medications);
+      }
       persistEntries(state.entries);
+      renderMedicationPicker();
+      renderMedicationList();
       renderAll();
       syncFormFromDate();
       toast("Backup importato.");
@@ -415,6 +578,46 @@ function importJson(event) {
     }
   };
   reader.readAsText(file);
+}
+
+function mergeMedications(current, imported) {
+  const byId = new Map(current.map((medication) => [medication.id, medication]));
+  imported.forEach((medication) => {
+    if (medication && medication.id && medication.name && !byId.has(medication.id)) {
+      byId.set(medication.id, medication);
+    }
+  });
+  return [...byId.values()];
+}
+
+function normalizeMedicationName(name) {
+  return name.trim().replace(/\s+/g, " ");
+}
+
+function createMedicationId(name) {
+  const base = name
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "") || "farmaco";
+  let id = base;
+  let index = 2;
+  while (state.medications.some((medication) => medication.id === id)) {
+    id = `${base}-${index}`;
+    index += 1;
+  }
+  return id;
+}
+
+function escapeHtml(value) {
+  return value.replace(/[&<>"']/g, (char) => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    "\"": "&quot;",
+    "'": "&#039;"
+  })[char]);
 }
 
 function toast(message) {

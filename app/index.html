@@ -20,6 +20,7 @@
         <button class="tab-button is-active" type="button" data-view="entryView">Registra</button>
         <button class="tab-button" type="button" data-view="calendarView">Calendario</button>
         <button class="tab-button" type="button" data-view="chartsView">Grafici</button>
+        <button class="tab-button" type="button" data-view="medicationsView">Farmaci</button>
         <button class="tab-button" type="button" data-view="exportView">Export</button>
       </nav>
 
@@ -67,6 +68,16 @@
                   </div>
                 </fieldset>
               </div>
+
+              <section class="medication-picker" id="medicationPickerWrapper">
+                <div class="section-heading compact-heading">
+                  <div>
+                    <h3>Farmaci presi</h3>
+                    <p>Seleziona uno o piu' farmaci per questa giornata.</p>
+                  </div>
+                </div>
+                <div class="medication-chip-list" id="medicationPicker"></div>
+              </section>
 
               <div class="form-actions">
                 <button class="primary-button" type="button" id="nextStepButton">Continua</button>
@@ -139,6 +150,27 @@
             </div>
             <div class="chart-summary" id="chartSummary"></div>
             <div class="chart" id="symptomChart"></div>
+          </section>
+        </section>
+
+        <section class="view" id="medicationsView" aria-labelledby="medicationsTitle">
+          <section class="panel medication-manager">
+            <div class="panel-header plain">
+              <div>
+                <h2 id="medicationsTitle">Farmaci</h2>
+                <p>Gestisci la lista selezionabile nelle registrazioni giornaliere.</p>
+              </div>
+            </div>
+
+            <form class="inline-form" id="medicationForm">
+              <label class="field">
+                <span>Nuovo farmaco</span>
+                <input id="medicationName" name="medicationName" type="text" autocomplete="off" placeholder="Nome farmaco">
+              </label>
+              <button class="primary-button" type="submit">Aggiungi</button>
+            </form>
+
+            <div class="medication-list" id="medicationList"></div>
           </section>
         </section>
 
